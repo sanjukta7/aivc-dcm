@@ -1,0 +1,8 @@
+[preprocessing]
+multi_cell_type = "datasets/1M/1m_train.h5ad"
+
+[datasets]
+multi_cell = "datasets/1M/1m_train.h5ad"
+
+[training]
+multi_cell = "train"

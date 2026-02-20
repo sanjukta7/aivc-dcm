@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sedd-rnaseq"
+version = "0.1.0"
+description = "Score-Entropy Discrete Diffusion for masked RNA-seq prediction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "SEDD RNA-seq" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    # "torch>=2.7.0",
+    "numpy>=1.21.0,<2.4",
+    "tqdm>=4.60.0",
+    "matplotlib>=3.4.0",
+    "matplotlib-inline>=0.1.6",
+    "ipykernel>=6.0.0",
+    "scanpy>=1.9.0",
+    "tomli>=2.0.0; python_version<'3.11'",
+    "cell-load",
+]
+
+[project.optional-dependencies]
+full = [
+    "matplotlib>=3.4.0",
+    "pandas>=1.3.0",
+    "scipy>=1.7.0",
+    "h5py>=3.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/kleonlab/st3"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sedd"]

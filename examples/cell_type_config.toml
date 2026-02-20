@@ -1,0 +1,9 @@
+[preprocessing]
+multi_cell_type = "datasets/20M/train.h5ad"
+
+[datasets]
+multi_cell = "datasets/20M/combined_train.h5ad"
+# k562_only = "datasets/30k/k562_train_split_processed.h5ad"
+
+[training]
+multi_cell = "train"

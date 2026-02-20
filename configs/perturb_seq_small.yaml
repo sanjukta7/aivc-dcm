@@ -1,0 +1,73 @@
+
+# Model architecture
+model:
+  name: SEDDPerturbationTransformerSmall
+  hidden_dim: 256
+  num_layers: 8
+  num_heads: 8
+  dropout: 0.1
+
+# Data parameters
+data:
+  train_data_path: datasets/1M/1m_train_processed.h5ad # Must be specified via CLI or environment variable
+  gene: cytokine  # Column in adata.obs with perturbation labels
+  control_name: PBS # Name of control perturbation
+  val_fraction: 0.1
+  loader_path: examples/cytokine_config.toml
+  cond_labels_pt_path: datasets/1M/cytokines.pt
+  all_perturbations_file: datasets/1M/all_cytokines.txt
+  data_path: datasets/1M/1m_test.h5ad
+
+# Training hyperparameters
+training:
+  batch_size: 512  # Max safe: 192, Conservative: 128 (for 97GB GPU with 8.5k context)
+  num_epochs: 100
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  mask_ratio: 0.15
+  gradient_clip: 1.0
+  optimizer:
+    type: AdamW
+    betas: [0.9, 0.999]
+  # Mixed precision training
+  use_amp: true
+  #able automatic mixed precision
+  amp_dtype: bfloat16  # Options: bfloat16, float16
+
+# Checkpoint and logging
+checkpointing:
+  checkpoint_dir: experiments/pbmc6_512_128
+  save_interval: 2
+  resume: null # Path to checkpoint to resume from
+
+logging:
+  log_interval: 2
+  val_interval: 1
+
+# Inference parameters
+inference:
+  mask_ratio: 0.2
+  num_steps: 100
+  temperature: 1.0
+  sampler: analytic
+  batch_size: 512
+  num_batches: null  # null means all batches
+  num_cells_visualize: 3
+  perturbations_file: datasets/1M/test_cytokines.txt
+  perturbations_all_file: datasets/1M/all_cytokines.txt
+  num_samples_per_pert: 100 # null means all batches
+  num_cells_visualize: 3
+  cell_type: "CD4 Naive"  # e.g., 'hepg2', 'jurkat', 'rpe1' - must match training data
+
+
+
+# Other parameters
+other:
+  seed: 42
+  num_workers: 16
+
+# Diffusion-specific parameters
+diffusion:
+  noise_schedule: LogLinearNoise
+  noise_eps: 1.0e-3
+  graph_type: AbsorbingGraph

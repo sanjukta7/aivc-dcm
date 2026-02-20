@@ -1,0 +1,65 @@
+
+# Model architecture
+model:
+  name: SEDDTransformerSmall
+  hidden_dim: 128
+  num_layers: 4
+  num_heads: 4
+  dropout: 0.1
+
+# Data parameters
+data:
+  data_path: null  # Must be specified via CLI or environment variable
+  val_fraction: 0.1
+  train_data:
+  test_data:
+
+# Training hyperparameters
+training:
+  batch_size: 32  # Max safe: 256, Recommended: 192 (for 97GB GPU with 28k context)
+  num_epochs: 50
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  mask_ratio: 0.15
+  gradient_clip: 1.0
+  optimizer:
+    type: AdamW
+    betas: [0.9, 0.999]
+  # Mixed precision training
+  use_amp: true  # Enable automatic mixed precision
+  amp_dtype: bfloat16  # Options: bfloat16, float16
+
+
+# Checkpoint and logging
+checkpointing:
+  checkpoint_dir: experiments/mlm/128,4,4b
+  save_interval: 2
+  resume: null  # Path to checkpoint to resume from
+
+logging:
+  log_interval: 2
+  val_interval: 1
+
+# Inference parameters
+
+inference:
+  reference_data: datasets/dentate/dentate_5000.h5ad
+  num_generate: 100
+  num_steps: 50
+  temperature: 1.0
+  seed: 42
+  keep_sparse: false
+  sampler: euler
+  batch_size: 1
+  mask_ratio: 0.2
+
+# Other parameters
+other:
+  seed: 42
+  num_workers: 4
+
+# Diffusion-specific parameters
+diffusion:
+  noise_schedule: LogLinearNoise
+  noise_eps: 1.0e-3
+  graph_type: AbsorbingGraph
