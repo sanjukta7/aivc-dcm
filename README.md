@@ -1,47 +1,95 @@
-# Discrete Cell Models (DCM) 
+# Discrete Cell Models (DCM): Discrete Diffusion for Single-Cell Gene Expression Modeling
 
-score entropy discrete diffusion for gene expression prediction 
+Sanjukta Bhattacharya, Christian Gensbigler, Shaamil Karim, Jon Lees
 
-We introduce a diffusion-based framework that learns cellular representations directly in the discrete domain. Our framework supports both unconditional and conditional generation, allowing for precise modeling of complex biological scenarios such as cell-type-specific transcriptional responses to genetic perturbations. We demonstrate that DCM scales effectively and achieves strong performance against current state-of-the-art methods, including scVI, CPA, STATE, scGPT, and scLDM. 
+[![Paper](https://img.shields.io/badge/MLGenX_2026-Poster-blue?style=for-the-badge)](https://openreview.net/forum?id=GPR1YXdE4U)
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-2026.02.19.705033-b31b1b.svg?style=for-the-badge)](https://www.biorxiv.org/content/10.64898/2026.02.19.705033v1)
+[![PDF](https://img.shields.io/badge/Paper-PDF-red?style=for-the-badge)](https://openreview.net/pdf?id=GPR1YXdE4U)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.5-EE4C2C.svg?style=for-the-badge&logo=pytorch)](https://pytorch.org/get-started/locally/)
+[![Python](https://img.shields.io/badge/python-3.10+-blue?style=for-the-badge)](https://www.python.org)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
+
+[**Installation**](#installation) | [**Dataset Download**](#dataset-download) | [**Training**](#training) | [**Sampling**](#sampling) | [**Citation**](#citation)
+
+<hr style="border: 2px solid gray;"></hr>
+
+## Latest Updates
+- [2026-03-01] Accepted at **MLGenX @ ICLR 2026** 🎉
+- [2026-03-01] Initial release
 
 
-<img src="figures/model.png" width="600">
+## Installation
 
-# Installation 
-You need to have Python 3.10 or newer installed on your system. We recommend installing [uv](https://github.com/astral-sh/uv). <br> 
-Use `uv run` assumes you already have an environment with dependencies installed.
-
-# Training 
-``` 
-uv run scripts/train_perturbseq.py \ 
-CONFIG=configs/perturb_seq_small.yaml \
-TRAIN_DATA_PATH= datasets/replogle.h5ad \
-COND_LABELS_PT_PATH= datasets/protein_embeddings.pt
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/YOUR_ORG/dcm.git
+cd dcm
+uv sync
+source .venv/bin/activate
 ```
 
-# Sampling (inf)
+## Dataset Download
 
-``` 
-uv run scripts/infernce_conditional.py \ 
-EXPERIMENT_DIR=experiments/dcm \
-CELL_TYPE=hepg2 \
-NUM_SAMPLES_PER_PERT=1000 \
-NUM_STEPS=100 
+We use three benchmarks. Download each dataset and place it under `datasets/`:
+
+| Dataset | Description | Link |
+|---|---|---|
+| `dentate-gyrus` | Hippocampal neurogenesis single-cell atlas | [Figshare](https://figshare.com/articles/dataset/Dentate_Gyrus_dataset/23354174?file=41110652) |
+| `replogle` | Genome-scale Perturb-seq (Replogle et al. 2022) | [Figshare](https://plus.figshare.com/articles/dataset/_Mapping_information-rich_genotype-phenotype_landscapes_with_genome-scale_Perturb-seq_Replogle_et_al_2022_processed_Perturb-seq_datasets/20029387) |
+| `pbmc-1m` | 1M PBMC cytokine perturbation (Parse) | [Figshare](https://figshare.com/articles/dataset/pbmc_parse/28589774?file=53372768) |
+
+## Training
+
+Set your dataset and output paths in `configs/perturb_seq_small.yaml` before training.
+
+**Unconditional generation (Dentate Gyrus):**
+```bash
+uv run scripts/train_perturbseq.py \
+    CONFIG=configs/perturb_seq_small.yaml \
+    TRAIN_DATA_PATH=datasets/dentate_gyrus.h5ad
 ```
 
-# Acknowledgements 
-This repository builds heavily off of [score sde](https://github.com/yang-song/score_sde_pytorch), [sedd](https://github.com/louaaron/Score-Entropy-Discrete-Diffusion/tree/main), [DiT](https://github.com/facebookresearch/DiT) and [STATE](https://github.com/ArcInstitute/state), [scDLM](https://github.com/czi-ai/scLDM). We also used the [cell-load](https://github.com/ArcInstitute/cell-load) package introduced in the STATE repository. 
-
-# Data + Reproducibility 
-`dentate-gyrus`: https://figshare.com/articles/dataset/Dentate_Gyrus_dataset/23354174?file=41110652 <br> 
-`replogle` : https://plus.figshare.com/articles/dataset/_Mapping_information-rich_genotype-phenotype_landscapes_with_genome-scale_Perturb-seq_Replogle_et_al_2022_processed_Perturb-seq_datasets/20029387 <br> 
-`pbmc-1m` : https://figshare.com/articles/dataset/pbmc_parse/28589774?file=53372768 <br> 
-
-
-
-# Citation
-If you find our work and/or our code useful, please cite us via: 
+**Conditional generation with perturbation conditioning (Replogle):**
+```bash
+uv run scripts/train_perturbseq.py \
+    CONFIG=configs/perturb_seq_small.yaml \
+    TRAIN_DATA_PATH=datasets/replogle.h5ad \
+    COND_LABELS_PT_PATH=datasets/protein_embeddings.pt
 ```
-coming soon 
-``` 
 
+Checkpoints and logs will be saved to `experiments/dcm/<run_name>/`.
+
+## Sampling
+
+Run the following command to sample from a trained model:
+
+```bash
+uv run scripts/inference_conditional.py \
+    EXPERIMENT_DIR=experiments/dcm \
+    CELL_TYPE=hepg2 \
+    NUM_SAMPLES_PER_PERT=1000 \
+    NUM_STEPS=100
+```
+
+## Citation
+
+If you find this work useful, please consider citing:
+
+```bibtex
+@inproceedings{
+bhattacharya2026discrete,
+title={Discrete Diffusion for Single-Cell Gene Expression Modeling},
+author={Sanjukta Bhattacharya and Christian Gensbigler and Shaamil Karim and Jon Lees},
+booktitle={ICLR 2026 Workshop on Machine Learning for Genomics Explorations},
+year={2026},
+url={https://openreview.net/forum?id=GPR1YXdE4U}
+}
+```
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+
+## Acknowledgements
+This repository builds heavily off of [score sde](https://github.com/yang-song/score_sde_pytorch), [sedd](https://github.com/louaaron/Score-Entropy-Discrete-Diffusion/tree/main), [DiT](https://github.com/facebookresearch/DiT) and [STATE](https://github.com/ArcInstitute/state), [scDLM](https://github.com/czi-ai/scLDM). We also used the [cell-load](https://github.com/ArcInstitute/cell-load) package introduced in the STATE repository.
