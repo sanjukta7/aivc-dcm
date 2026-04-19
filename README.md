@@ -85,7 +85,7 @@ year={2026},
 url={https://openreview.net/forum?id=GPR1YXdE4U}
 }
 ```
-
+## Model Weights [here](https://drive.google.com/drive/folders/1UYmGCN-wJ6zlYttG-cqtyTenVqNydw-N?usp=sharing)
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
